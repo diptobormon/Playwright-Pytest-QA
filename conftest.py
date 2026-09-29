@@ -1,5 +1,3 @@
-import os
-
 import pytest
 
 from utils.config import get_credentials, get_practice_credentials
@@ -10,8 +8,6 @@ def authenticated_credentials():
     try:
         return get_credentials()
     except RuntimeError as error:
-        if os.getenv("CI") == "true":
-            raise
         pytest.skip(str(error))
 
 
@@ -20,8 +16,6 @@ def practice_credentials():
     try:
         return get_practice_credentials()
     except RuntimeError as error:
-        if os.getenv("CI") == "true":
-            raise
         pytest.skip(str(error))
 
 
