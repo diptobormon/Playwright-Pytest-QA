@@ -87,8 +87,8 @@ playwright install
 
 ### Test account configuration
 
-Authenticated API/UI tests require a dedicated test account. Never commit a real password,
-token, or `.env` file.
+Authenticated API/UI tests require a dedicated non-production test account. Never commit a
+real password, token, or `.env` file.
 
 ```bash
 # Export these values in your shell or configure them in your CI secret store.
@@ -102,12 +102,14 @@ BASE_URL=https://rahulshettyacademy.com
 The project reads the credential variables and `BASE_URL` from the environment.
 `.env.example` is a template only; the project does not load `.env` files automatically.
 Tests that require credentials are skipped with a clear message when the corresponding
-environment variables are not configured.
+environment variables are not configured. The default GitHub Actions workflow currently
+runs without credentials and therefore validates only unauthenticated coverage.
 
 Use dedicated, isolated test accounts for `TEST_USER_*` and `PRACTICE_*`. The API tests
 create orders in the target environment and do not delete them because the demo API does
 not expose a supported cleanup endpoint. Do not point these tests at a production account.
-In GitHub Actions, missing secrets fail the workflow before tests start.
+When authenticated coverage is needed later, add the four variables as GitHub Actions
+repository secrets and pass them into the workflow environment.
 
 ---
 

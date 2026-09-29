@@ -15,23 +15,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           playwright install --with-deps
-      - name: Validate required secrets
-        env:
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          PRACTICE_USERNAME: ${{ secrets.PRACTICE_USERNAME }}
-          PRACTICE_PASSWORD: ${{ secrets.PRACTICE_PASSWORD }}
-        run: |
-          test -n "$TEST_USER_EMAIL"
-          test -n "$TEST_USER_PASSWORD"
-          test -n "$PRACTICE_USERNAME"
-          test -n "$PRACTICE_PASSWORD"
       - name: Run tests
-        env:
-          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
-          PRACTICE_USERNAME: ${{ secrets.PRACTICE_USERNAME }}
-          PRACTICE_PASSWORD: ${{ secrets.PRACTICE_PASSWORD }}
         run: pytest --tracing=retain-on-failure --html=report.html --self-contained-html
       - name: Upload report
         if: always()
