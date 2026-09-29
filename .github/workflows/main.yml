@@ -1,0 +1,48 @@
+name: Playwright Tests
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          playwright install --with-deps
+      - name: Validate required secrets
+        env:
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          PRACTICE_USERNAME: ${{ secrets.PRACTICE_USERNAME }}
+          PRACTICE_PASSWORD: ${{ secrets.PRACTICE_PASSWORD }}
+        run: |
+          test -n "$TEST_USER_EMAIL"
+          test -n "$TEST_USER_PASSWORD"
+          test -n "$PRACTICE_USERNAME"
+          test -n "$PRACTICE_PASSWORD"
+      - name: Run tests
+        env:
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+          PRACTICE_USERNAME: ${{ secrets.PRACTICE_USERNAME }}
+          PRACTICE_PASSWORD: ${{ secrets.PRACTICE_PASSWORD }}
+        run: pytest --tracing=retain-on-failure --html=report.html --self-contained-html
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: report.html
+      - name: Upload Playwright artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-test-results
+          path: test-results/
+          if-no-files-found: ignore
